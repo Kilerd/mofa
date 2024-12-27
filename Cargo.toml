@@ -1,10 +1,10 @@
 [package]
-name = "yaac"
-version = "0.1.2"
+name = "mofa"
+version = "0.1.0"
 edition = "2021"
 description = "yet another another config lib for web application"
 license = "MIT"
-homepage = "https://github.com/Kilerd/yaac"
+homepage = "https://github.com/Kilerd/mofa"
 readme = "readme.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

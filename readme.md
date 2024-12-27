@@ -1,25 +1,25 @@
 <div align="center">
-    <h1>yaac</h1>
-    <p>Yet another another configuration lib for web application</p>
-    <img alt="GitHub Workflow Status (with branch)" src="https://img.shields.io/github/actions/workflow/status/kilerd/yaac/rust.yaml?branch=main">
-    <a href="https://crates.io/crates/yaac"><img alt="Crates.io" src="https://img.shields.io/crates/v/yaac"></a>
-    <a href="https://codecov.io/gh/kilerd/yaac" >
-    <img src="https://codecov.io/gh/kilerd/yaac/branch/main/graph/badge.svg"/>
+    <h1>mofa</h1>
+    <p>the config lib wich merge options from anywhere</p>
+    <img alt="GitHub Workflow Status (with branch)" src="https://img.shields.io/github/actions/workflow/status/kilerd/mofa/rust.yaml?branch=main">
+    <a href="https://crates.io/crates/mofa"><img alt="Crates.io" src="https://img.shields.io/crates/v/mofa"></a>
+    <a href="https://codecov.io/gh/kilerd/mofa" >
+    <img src="https://codecov.io/gh/kilerd/mofa/branch/main/graph/badge.svg"/>
     </a>
-    <a href="https://crates.io/crates/yaac">
-    <img alt="Crates.io (recent)" src="https://img.shields.io/crates/dr/yaac"></a>
-    <a href="https://docs.rs/yaac"><img alt="docs.rs" src="https://img.shields.io/docsrs/yaac"></a>
-    <img alt="Crates.io" src="https://img.shields.io/crates/l/yaac">
+    <a href="https://crates.io/crates/mofa">
+    <img alt="Crates.io (recent)" src="https://img.shields.io/crates/dr/mofa"></a>
+    <a href="https://docs.rs/mofa"><img alt="docs.rs" src="https://img.shields.io/docsrs/mofa"></a>
+    <img alt="Crates.io" src="https://img.shields.io/crates/l/mofa">
 </div>
 
 ## Features
 - **hierarchy file supported**: file source allow users to load config from multiple files
-- **environment variable resolver**: yaac can resolve the placeholder like `${APP_KEY_NAME}`
-- **path variable resolver**: yaac can resolve the placeholder like `${parent.sub.key_name}`
+- **environment variable resolver**: mofa can resolve the placeholder like `${APP_KEY_NAME}`
+- **path variable resolver**: mofa can resolve the placeholder like `${parent.sub.key_name}`
 
 ## Installation
 ```sh
-$ cargo add yaac
+$ cargo add mofa
 ```
 
 ## Example
@@ -52,6 +52,6 @@ look at some of these issues:
 This project is licensed under MIT license ([LICENSE-MIT](LICENSE-MIT) or [http://opensource.org/licenses/MIT]).
 
 
-[contributing]: https://github.com/kilerd/yaac/blob/master.github/CONTRIBUTING.md
-[good-first-issue]: https://github.com/kilerd/yaac/labels/good%20first%20issue
-[help-wanted]: https://github.com/kilerd/yaac/labels/help%20wanted
+[contributing]: https://github.com/kilerd/mofa/blob/master.github/CONTRIBUTING.md
+[good-first-issue]: https://github.com/kilerd/mofa/labels/good%20first%20issue
+[help-wanted]: https://github.com/kilerd/mofa/labels/help%20wanted
