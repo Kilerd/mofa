@@ -1,6 +1,6 @@
 <div align="center">
     <h1>mofa</h1>
-    <p>the config lib wich merge options from anywhere</p>
+    <p>the config lib that <b>M</b>erges <b>o</b>ptions <b>f</b>rom <b>a</b>nywhere</p>
     <img alt="GitHub Workflow Status (with branch)" src="https://img.shields.io/github/actions/workflow/status/kilerd/mofa/rust.yaml?branch=main">
     <a href="https://crates.io/crates/mofa"><img alt="Crates.io" src="https://img.shields.io/crates/v/mofa"></a>
     <a href="https://codecov.io/gh/kilerd/mofa" >

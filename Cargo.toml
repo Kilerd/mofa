@@ -2,7 +2,7 @@
 name = "mofa"
 version = "0.1.0"
 edition = "2021"
-description = "yet another another config lib for web application"
+description = "the config lib that merges options from anywhere"
 license = "MIT"
 homepage = "https://github.com/Kilerd/mofa"
 readme = "readme.md"
