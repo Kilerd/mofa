@@ -6,6 +6,7 @@ mod processor;
 mod source;
 
 pub mod utils;
+pub use toml;
 
 pub use crate::processor::{
     EnvironmentVariableProcessor, PathVariableProcessor, Processor,
