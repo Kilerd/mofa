@@ -168,6 +168,141 @@ mod tests {
     }
 
     #[test]
+    fn should_override_typed_config_from_given_environment() {
+        #[derive(Debug, Deserialize)]
+        struct Config {
+            value: i32,
+            ratio: f64,
+            debug: bool,
+        }
+
+        temp_env::with_vars(
+            [
+                ("APP_VALUE", Some("42")),
+                ("APP_RATIO", Some("1.5")),
+                ("APP_DEBUG", Some("true")),
+            ],
+            || {
+                let dir = tempdir().unwrap();
+                let file_path = dir.path().join("application.toml");
+                let mut tmp_file = File::create(&file_path).unwrap();
+                writeln!(tmp_file, "value = 1\nratio = 0.5\ndebug = false").unwrap();
+
+                let mut loader = ConfigLoader::new();
+                loader.add_source(FileSource::new(file_path));
+                loader.add_source(EnvironmentSource::new("APP"));
+
+                let config: Config = loader.construct().unwrap();
+                assert_eq!(42, config.value);
+                assert_eq!(1.5, config.ratio);
+                assert!(config.debug);
+            },
+        );
+    }
+
+    #[test]
+    fn should_fail_to_override_typed_config_with_unparsable_environment() {
+        #[derive(Debug, Deserialize)]
+        struct Config {
+            #[allow(dead_code)]
+            value: i32,
+        }
+
+        temp_env::with_var("APP_VALUE", Some("abc"), || {
+            let dir = tempdir().unwrap();
+            let file_path = dir.path().join("application.toml");
+            let mut tmp_file = File::create(&file_path).unwrap();
+            writeln!(tmp_file, "value = 1").unwrap();
+
+            let mut loader = ConfigLoader::new();
+            loader.add_source(FileSource::new(file_path));
+            loader.add_source(EnvironmentSource::new("APP"));
+
+            let error = loader.construct::<Config>().unwrap_err();
+            assert_eq!(
+                "merge fail, path=$.value, cannot parse \"abc\" into existed type=integer",
+                error.to_string()
+            );
+        });
+    }
+
+    #[test]
+    fn should_override_nested_config_from_given_environment() {
+        #[derive(Debug, Deserialize)]
+        struct Server {
+            port: u16,
+            host: String,
+        }
+        #[derive(Debug, Deserialize)]
+        struct Config {
+            server: Server,
+        }
+
+        temp_env::with_var("APP_SERVER__PORT", Some("9090"), || {
+            let dir = tempdir().unwrap();
+            let file_path = dir.path().join("application.toml");
+            let mut tmp_file = File::create(&file_path).unwrap();
+            writeln!(tmp_file, "[server]\nport = 8080\nhost = \"localhost\"").unwrap();
+
+            let mut loader = ConfigLoader::new();
+            loader.add_source(FileSource::new(file_path));
+            loader.add_source(EnvironmentSource::new("APP"));
+
+            let config: Config = loader.construct().unwrap();
+            assert_eq!(9090, config.server.port);
+            assert_eq!("localhost", config.server.host);
+        });
+    }
+
+    #[test]
+    fn should_override_snake_case_config_from_given_environment() {
+        #[derive(Debug, Deserialize)]
+        struct Config {
+            database_url: String,
+        }
+
+        temp_env::with_var("APP_DATABASE_URL", Some("postgres://from-env"), || {
+            let dir = tempdir().unwrap();
+            let file_path = dir.path().join("application.toml");
+            let mut tmp_file = File::create(&file_path).unwrap();
+            writeln!(tmp_file, "database_url = \"postgres://from-file\"").unwrap();
+
+            let mut loader = ConfigLoader::new();
+            loader.add_source(FileSource::new(file_path));
+            loader.add_source(EnvironmentSource::new("APP"));
+
+            let config: Config = loader.construct().unwrap();
+            assert_eq!("postgres://from-env", config.database_url);
+        });
+    }
+
+    #[test]
+    fn should_override_nested_config_with_customized_separator() {
+        #[derive(Debug, Deserialize)]
+        struct Server {
+            port: u16,
+        }
+        #[derive(Debug, Deserialize)]
+        struct Config {
+            server: Server,
+        }
+
+        temp_env::with_var("APP_SERVER_PORT", Some("9090"), || {
+            let dir = tempdir().unwrap();
+            let file_path = dir.path().join("application.toml");
+            let mut tmp_file = File::create(&file_path).unwrap();
+            writeln!(tmp_file, "[server]\nport = 8080").unwrap();
+
+            let mut loader = ConfigLoader::new();
+            loader.add_source(FileSource::new(file_path));
+            loader.add_source(EnvironmentSource::new("APP").with_separator("_"));
+
+            let config: Config = loader.construct().unwrap();
+            assert_eq!(9090, config.server.port);
+        });
+    }
+
+    #[test]
     fn should_resolve_placeholder() {
         #[derive(Debug, Deserialize)]
         struct Config {
