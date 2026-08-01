@@ -1,7 +1,7 @@
 <div align="center">
     <h1>mofa</h1>
     <p>the config lib that <b>M</b>erges <b>o</b>ptions <b>f</b>rom <b>a</b>nywhere</p>
-    <img alt="GitHub Workflow Status (with branch)" src="https://img.shields.io/github/actions/workflow/status/kilerd/mofa/rust.yaml?branch=main">
+    <img alt="GitHub Workflow Status (with branch)" src="https://img.shields.io/github/actions/workflow/status/kilerd/mofa/rust.yml?branch=main">
     <a href="https://crates.io/crates/mofa"><img alt="Crates.io" src="https://img.shields.io/crates/v/mofa"></a>
     <a href="https://crates.io/crates/mofa">
     <img alt="Crates.io (recent)" src="https://img.shields.io/crates/dr/mofa"></a>
@@ -22,23 +22,55 @@ $ cargo add mofa
 ```
 
 ## Example
+
+```toml
+# configuration/application.toml
+name = "mofa"
+
+[server]
+port = 8080
+```
+
+```toml
+# configuration/application_database.toml
+database_url = "postgres://localhost/mofa"
+```
+
 ```rust
+use mofa::{ConfigLoader, EnvironmentSource, FileSource};
+use serde::Deserialize;
+use std::path::PathBuf;
+
 #[derive(Debug, Deserialize)]
 struct Config {
-    original: String,
-    value: String,
+    name: String,
+    database_url: String,
+    server: Server,
 }
-fn main() {
+
+#[derive(Debug, Deserialize)]
+struct Server {
+    port: u16,
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut loader = ConfigLoader::new();
-    loader.add_source(FileSource::new("configuration/application.toml"));
-    loader.add_source(FileSource::new("configuration/application_database.toml"));
+    loader.add_source(FileSource::new(PathBuf::from("configuration/application.toml")));
+    loader.add_source(FileSource::new(PathBuf::from(
+        "configuration/application_database.toml",
+    )));
     loader.add_source(EnvironmentSource::new("APP"));
     loader.enable_environment_variable_processor();
     loader.enable_path_variable_processor();
 
     let config: Config = loader.construct()?;
+    println!("{config:?}");
+    Ok(())
 }
 ```
+
+Sources are merged in the order they are added and the later one wins, so putting
+`EnvironmentSource` last lets `APP_SERVER__PORT=9090` override what the files provide.
 
 ## Environment source
 
@@ -62,7 +94,7 @@ An environment variable is always a string, so a variable overriding a non-strin
 parsed into the type of the field it overrides. Given:
 
 ```toml
-# configurations/application.toml
+# configuration/application.toml
 port = 8080
 ratio = 0.5
 debug = false
@@ -94,6 +126,6 @@ look at some of these issues:
 This project is licensed under MIT license ([LICENSE-MIT](LICENSE-MIT) or [http://opensource.org/licenses/MIT]).
 
 
-[contributing]: https://github.com/kilerd/mofa/blob/master.github/CONTRIBUTING.md
+[contributing]: https://github.com/kilerd/mofa/blob/main/.github/CONTRIBUTING.md
 [good-first-issue]: https://github.com/kilerd/mofa/labels/good%20first%20issue
 [help-wanted]: https://github.com/kilerd/mofa/labels/help%20wanted
