@@ -8,9 +8,7 @@ mod source;
 pub mod utils;
 pub use toml;
 
-pub use crate::processor::{
-    EnvironmentVariableProcessor, PathVariableProcessor, Processor,
-};
+pub use crate::processor::{EnvironmentVariableProcessor, PathVariableProcessor, Processor};
 pub use crate::source::{environment::EnvironmentSource, file_based::FileSource, Source};
 
 #[derive(Default)]
@@ -26,10 +24,7 @@ impl ConfigLoader {
     pub fn add_source<T: Source + Send + Sync + 'static>(&mut self, source: T) {
         self.sources.push(Box::new(source))
     }
-    pub fn add_processor<T: Processor + Send + Sync + 'static>(
-        &mut self,
-        post_processor: T,
-    ) {
+    pub fn add_processor<T: Processor + Send + Sync + 'static>(&mut self, post_processor: T) {
         self.processors.push(Box::new(post_processor))
     }
 
@@ -60,7 +55,7 @@ impl ConfigLoader {
                 is_modify = is_modify || post_processor.process(&mut result)?;
             }
 
-            if is_modify == false {
+            if !is_modify {
                 break;
             }
         }
@@ -364,7 +359,11 @@ mod tests {
             let dir = tempdir().unwrap();
             let file_path = dir.path().join("application.toml");
             let mut tmp_file = File::create(&file_path).unwrap();
-            writeln!(tmp_file, "original=\"123\"\nvalue = \"more ${{YAAC_VALUE}}\"").unwrap();
+            writeln!(
+                tmp_file,
+                "original=\"123\"\nvalue = \"more ${{YAAC_VALUE}}\""
+            )
+            .unwrap();
 
             let mut loader = ConfigLoader::new();
             loader.add_source(FileSource::new(file_path));
@@ -373,6 +372,7 @@ mod tests {
             loader.enable_path_variable_processor();
 
             let config: Config = loader.construct().unwrap();
+            assert_eq!("123", config.original);
             assert_eq!("more 123", config.value);
         });
     }

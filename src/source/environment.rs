@@ -41,7 +41,7 @@ impl EnvironmentSource {
 
 impl Source for EnvironmentSource {
     fn load(&self) -> Result<Value, Box<dyn Error>> {
-        let prefix = format!("{}_", &self.prefix);
+        let prefix = format!("{}_", self.prefix);
         let environments: Vec<Value> = std::env::vars()
             .filter(|(key, _)| key.starts_with(&prefix))
             .map(|(key, value)| (key.strip_prefix(&prefix).unwrap_or(&key).to_owned(), value))
